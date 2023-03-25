@@ -7,8 +7,7 @@ const {
     usuarioGet,
     usuarioPut,
     usuarioPost,
-    usuarioDelete,
-    usuarioPatch } = require('../controllers/user-routes');
+    usuarioDelete} = require('../controllers/user-routes');
 
 
 const router = Router();
