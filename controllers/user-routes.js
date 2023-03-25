@@ -79,19 +79,19 @@ const usuarioPut = async (req, res = response) => {
 }
 
 
-const usuarioDelete = (req, res = response) => {
+const usuarioDelete = async (req, res = response) => {
+
+    const {id} = req.params;
+
+    // const usuario = await Usuario.findByIdAndDelete(id); //borra de la base de datos
+    const usuario = await Usuario.findByIdAndUpdate(id, {estado:false}); //Lo hace invisible en la db(Lo borra)
 
     res.json({
-        msg: "delete API - controlador"
+        msg: "Usuario eliminado",
+        usuario
     });
 }
 
-const usuarioPatch = (req, res = response) => {
-
-    res.json({
-        msg: "patch API - controlador"
-    });
-}
 
 module.exports = {
     usuarioGet,
