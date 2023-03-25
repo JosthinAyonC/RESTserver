@@ -21,8 +21,19 @@ const emailExiste = async (correo = '') => {
     
 }
 
+const existeUsuario = async (_id = '') => {
+   
+    const usuarioEx = await Usuario.findOne({ _id });
+
+    if (!usuarioEx) {
+        throw new Error(`No se ha encontrado un ususario con id ${_id}` );
+    }
+    
+}
+
 
 module.exports = {
     esRoleValido,
-    emailExiste
+    emailExiste,
+    existeUsuario
 }

@@ -1,38 +1,56 @@
-const {  response , request } = require('express');
+const { response, request } = require('express');
 const Usuario = require('../models/usuario');
 const bcryptjs = require('bcryptjs');
+const { validarReq } = require('../middlewares/validarCampos');
 
 
 
-const usuarioGet = (req, res = response) => {
-    
-    const {nombre, email} = req.query;
-    
+const usuarioGet = async (req, res = response) => {
+
+    const { limit = 5, since = 0 } = req.query;
+    //varible para ver si es un ususario que se encuentra activo la db o no 
+    //(cabe recalcar que los usuarios no activos no se borran)
+    const activo = { estado: true }; 
+
+    //funcion para validar si los argumentos pasados por query son noNumericos
+    const validation = validarReq(limit, since);
+
+    if (!validation.valido) {
+        return res.status(400).json({validation});
+    }
+
+    //Promise.all ejecuta las promesas (await) de manera simultanea
+    const [total, usuarios] = await Promise.all([ 
+            Usuario.countDocuments(activo),
+            Usuario.find(activo)
+                .skip(Number(since)) //Manda por el argumento get desde donde busca registros
+                .limit(Number(limit))
+        ])
+
     res.json({
-        msg: "get API - controlador",
-        nombre,
-        email
+        total,
+        usuarios
     });
 }
 
-const usuarioPost = async(req, res = response) => {
+const usuarioPost = async (req, res = response) => {
 
     //devuelve un objeto de errores que se encuentran en la peticion
-    
-    
-    const {nombre, correo, contrasenia, rol} = req.body;
-    const usuario = new Usuario({nombre, correo, contrasenia, rol});
-    
+
+
+    const { nombre, correo, contrasenia, rol } = req.body;
+    const usuario = new Usuario({ nombre, correo, contrasenia, rol });
+
     //Verificacion de correo
 
     //encriptar pass
     const salt = bcryptjs.genSaltSync();
-    usuario.contrasenia = bcryptjs.hashSync( contrasenia, salt );
+    usuario.contrasenia = bcryptjs.hashSync(contrasenia, salt);
 
     //guardar en base de datos
     await usuario.save();
 
-    
+
 
     res.json({
         msg: "Usuario creado satisfactoriamente",
@@ -40,13 +58,23 @@ const usuarioPost = async(req, res = response) => {
     });
 }
 
-const usuarioPut = (req, res = response) => {
+const usuarioPut = async (req, res = response) => {
 
-    const id = req.params.id;
+    const { id } = req.params;
+    const { _id, contrasenia, google, correo, ...resto } = req.body;
+
+    if (contrasenia) {
+
+        const salt = bcryptjs.genSaltSync();
+        resto.contrasenia = bcryptjs.hashSync(contrasenia, salt);
+
+    }
+
+    const usuarioDb = await Usuario.findByIdAndUpdate(id, resto);
 
     res.json({
-        msg: "put API - controlador",
-        id
+        msg: "Usuario actualizado satisfactoriamente",
+        usuarioDb
     });
 }
 
@@ -66,9 +94,9 @@ const usuarioPatch = (req, res = response) => {
 }
 
 module.exports = {
-    usuarioGet, 
-    usuarioDelete,  
-    usuarioPost, 
+    usuarioGet,
+    usuarioDelete,
+    usuarioPost,
     usuarioPut,
     usuarioPatch
 }
