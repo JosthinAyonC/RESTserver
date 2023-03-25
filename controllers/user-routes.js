@@ -97,6 +97,5 @@ module.exports = {
     usuarioGet,
     usuarioDelete,
     usuarioPost,
-    usuarioPut,
-    usuarioPatch
+    usuarioPut
 }
