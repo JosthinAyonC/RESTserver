@@ -10,22 +10,22 @@ const usuarioGet = async (req, res = response) => {
     const { limit = 5, since = 0 } = req.query;
     //varible para ver si es un ususario que se encuentra activo la db o no 
     //(cabe recalcar que los usuarios no activos no se borran)
-    const activo = { estado: true }; 
+    const activo = { estado: true };
 
     //funcion para validar si los argumentos pasados por query son noNumericos
     const validation = validarReq(limit, since);
 
     if (!validation.valido) {
-        return res.status(400).json({validation});
+        return res.status(400).json({ validation });
     }
 
     //Promise.all ejecuta las promesas (await) de manera simultanea
-    const [total, usuarios] = await Promise.all([ 
-            Usuario.countDocuments(activo),
-            Usuario.find(activo)
-                .skip(Number(since)) //Manda por el argumento get desde donde busca registros
-                .limit(Number(limit))
-        ])
+    const [total, usuarios] = await Promise.all([
+        Usuario.countDocuments(activo),
+        Usuario.find(activo)
+            .skip(Number(since)) //Manda por el argumento get desde donde busca registros
+            .limit(Number(limit))
+    ])
 
     res.json({
         total,
@@ -81,13 +81,14 @@ const usuarioPut = async (req, res = response) => {
 
 const usuarioDelete = async (req, res = response) => {
 
-    const {id} = req.params;
+    const { id } = req.params;
+    const usserAuth = req.usuario;
 
     // const usuario = await Usuario.findByIdAndDelete(id); //borra de la base de datos
-    const usuario = await Usuario.findByIdAndUpdate(id, {estado:false}); //Lo hace invisible en la db(Lo borra)
+    const usuario = await Usuario.findByIdAndUpdate(id, { estado: false }); //Lo hace invisible en la db(L o borra)
 
     res.json({
-        msg: "Usuario eliminado",
+        
         usuario
     });
 }

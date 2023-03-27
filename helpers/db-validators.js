@@ -20,16 +20,25 @@ const emailExiste = async (correo = '') => {
     }
     
 }
-
 const existeUsuario = async (_id = '') => {
    
     const usuarioEx = await Usuario.findOne({ _id });
 
-    if (!usuarioEx) {
+    if (!usuarioEx ) {
         throw new Error(`No se ha encontrado un ususario con id ${_id}` );
     }
     
 }
+//Metodo en caso de que intentemos borrar un id "invisible"/Borrado, muestre que no se encuentra.
+// const existeUsuario = async (_id = '') => { 
+   
+//     const usuarioEx = await Usuario.findById({ _id });
+
+//     if (!usuarioEx || !usuarioEx.estado) {
+//         throw new Error(`No se ha encontrado un ususario con id ${_id}, Puede que este usuario se encuentre inactivo` );
+//     }
+    
+// }
 
 
 module.exports = {
