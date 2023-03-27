@@ -24,11 +24,11 @@ const validarJWT = async (req = request, res = response, next) => {
             })
         }
         
-        // if (!usuario.estado) {
-        //     return res.status(401).json({
-        //         msg: 'Token no validoss'
-        //     })
-        // }
+        if (!usuario.estado) {
+            return res.status(401).json({
+                msg: 'Token no validoss'
+            })
+        }
 
         req.usuario = usuario;
         next();
