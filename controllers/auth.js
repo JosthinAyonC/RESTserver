@@ -2,6 +2,7 @@ const { response } = require("express");
 const Usuario = require('../models/usuario');
 const bcryptjs = require('bcryptjs');
 const { generarJWT } = require("../helpers/generarJWT");
+const { googleVerify } = require("../helpers/googleVerify");
 
 const login = async (req, res = response) => {
 
@@ -29,7 +30,7 @@ const login = async (req, res = response) => {
             })
         }
         //Generar el JWT
-        const token = await generarJWT( usuario.id );
+        const token = await generarJWT(usuario.id);
 
 
         res.json({
@@ -47,6 +48,55 @@ const login = async (req, res = response) => {
 
 }
 
+const googleSignIn = async (req, res = response) => {
+
+    const { id_token } = req.body;
+
+    try {
+        const { correo, nombre, img } = await googleVerify( id_token );
+        
+        let usuario = await Usuario.findOne({ correo });
+
+        if(!usuario){
+
+            const data = {
+                nombre,
+                correo,
+                contrasenia: ':v',
+                img,
+                google: true 
+
+            };
+            usuario = new Usuario (data);
+            await usuario.save();
+        }
+
+        //Si el usuario en DB 
+        if(!usuario.estado){
+            return res.status(401).json({
+                msg:'Comuniquese con un administrador //USUARIO BLOQUEADO'
+            });
+        }
+        //Generar el jwt
+        const token = await generarJWT( usuario.id );
+
+        res.json({
+            msg: 'Todo bien',
+            token,
+            usuario
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            ok: 'false',
+            msg: 'No ha sido posible verificar el token'
+        })
+    }
+
+
+}
+
 module.exports = {
-    login
+    login,
+    googleSignIn
 }
