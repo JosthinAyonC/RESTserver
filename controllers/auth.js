@@ -52,7 +52,7 @@ const googleSignIn = async (req, res = response) => {
 
     const { id_token } = req.body;
     const salt = bcryptjs.genSaltSync();
-    const pass = bcryptjs.hashSync('contrasenia', salt);
+    const pass = bcryptjs.hashSync('', salt);
 
     try {
         const { correo, nombre, img } = await googleVerify( id_token );
