@@ -39,7 +39,7 @@
 
             const body = { id_token: response.credential };
 
-            fetch('https://restserver-production-3ce1.up.railway.app/api/auth/google', {
+            fetch('http://https://restserver-production-3ce1.up.railway.app/api/auth/google', {
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json'
@@ -50,7 +50,7 @@
             .then( resp =>{
                 console.log(resp)
                 localStorage.setItem( 'email', resp.usuario.correo);
-                // location.reload();
+                location.reload();
             })
             .catch(console.warn);
             
@@ -64,7 +64,7 @@
 
             google.accounts.id.revoke(localStorage.getItem( 'email'), done =>{
                 localStorage.clear();
-                // location.reload();
+                location.reload();
             })
 
         }
